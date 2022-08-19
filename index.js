@@ -45,7 +45,17 @@ async function run(){
       const query = {date: date};
       const bookings = await bookingCollection.find(query).toArray();
 
-      res.send(bookings);
+      //step 3: for each service, find bookings for that service
+
+      services.forEach(service => {
+        const serviceBookings = bookings.filter(b => b.treatment === service.name);
+        const booked = serviceBookings.map(s => s.slot);
+        const available = service.slots.filter(s => !booked.includes(s));
+        service.available = available;
+
+      })
+
+      res.send(services);
     })
 
     /**
