@@ -34,6 +34,20 @@ async function run(){
       res.send(services);
     });
 
+    app.get('/available', async(req, res)=>{
+      const date = req.query.date || 'Aug 19, 2022';
+
+      //step 1: get all services
+
+      const services = await serviceCollection.find().toArray();
+
+      //step 2: get the booking of that day
+      const query = {date: date};
+      const bookings = await bookingCollection.find(query).toArray();
+
+      res.send(bookings);
+    })
+
     /**
      * API Naming Convention
      * app.get('/booking') //get all booking in this collection. or get more than one or by filter
