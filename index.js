@@ -26,6 +26,7 @@ async function run(){
 
     const serviceCollection = client.db("doctors_portal").collection("services");
     const bookingCollection = client.db("doctors_portal").collection("bookings");
+    const userCollection = client.db("doctors_portal").collection("users");
 
     app.get('/service',async(req,res)=>{
       const query = {};
@@ -33,6 +34,18 @@ async function run(){
       const services = await cursor.toArray();
       res.send(services);
     });
+
+    app.put('/user/:email', async(req, res)=> {
+      const email = req.params.email;
+      const user = req.body;
+      const filter = {email: email};
+      const options = {upsert: true};
+      const updateDoc = {
+        $set: user,
+      }; 
+      const result = await userCollection.updateOne(filter, updateDoc, options);
+      res.send(result);
+    })
     //Warning: for future me when I will learn more MongoDB
     //This is not the proper way to query.
     //After learning more about mongodb. Use aggregate lookup, pipeline, match, group
@@ -80,7 +93,8 @@ async function run(){
      * app.get('/booking/:id') // get a specific booking
      * app.post('/booking') // add a new booking
      * app.patch('/booking/:id') // update specific one
-     * app.patch('/booking/:id') // delete specific one
+     * app.put('/booking/:id') //if user exists then update
+     * app.delete('/booking/:id') // delete specific one
      */
     app.get('/booking', async(req, res) => {
       const patient = req.query.patient;
